@@ -11,6 +11,8 @@ import com.werockstar.rxmultiplesource.api.GithubApi;
 import com.werockstar.rxmultiplesource.model.RepoCollection;
 import com.werockstar.rxmultiplesource.presenter.MainPresenter;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.View {
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     }
 
     @Override
-    public void onDisplayRepo(RepoCollection collection) {
+    public void onDisplayRepo(List<RepoCollection> repoList) {
 
     }
 }
