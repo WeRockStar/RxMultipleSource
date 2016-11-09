@@ -20,7 +20,7 @@ public class HttpModule {
     @Singleton
     public OkHttpClient provideOkHttp() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
         return new OkHttpClient.Builder().addInterceptor(interceptor).build();
     }
 

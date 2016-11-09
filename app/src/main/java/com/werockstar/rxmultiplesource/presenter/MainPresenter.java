@@ -25,7 +25,7 @@ public class MainPresenter {
 
     public void getRepo(String user) {
         subscription.add(api.getUsers(user)
-                .flatMap(userInfo -> api.getRepo(userInfo.getFullName()))
+                .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(repo -> {
