@@ -42,6 +42,6 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     @Override
     public void onDisplayRepo(List<RepoCollection> repoList) {
-
+        
     }
 }
