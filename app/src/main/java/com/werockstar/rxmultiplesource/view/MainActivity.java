@@ -2,6 +2,7 @@ package com.werockstar.rxmultiplesource.view;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
 
     EditText edtUsername;
     Button btnSearch;
+    RecyclerView rvRepoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +36,21 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         presenter = new MainPresenter(api, this);
         edtUsername = (EditText) findViewById(R.id.edtUsername);
         btnSearch = (Button) findViewById(R.id.btnSearch);
+        rvRepoList = (RecyclerView) findViewById(R.id.recyclerView);
 
         btnSearch.setOnClickListener(v -> {
             presenter.getRepo(edtUsername.getText().toString());
         });
+
+        configurationRecyclerView();
+    }
+
+    private void configurationRecyclerView() {
+        rvRepoList.setHasFixedSize(true);
     }
 
     @Override
     public void onDisplayRepo(List<RepoCollection> repoList) {
-        
+
     }
 }
