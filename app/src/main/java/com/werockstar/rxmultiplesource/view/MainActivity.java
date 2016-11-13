@@ -9,6 +9,7 @@ import android.widget.EditText;
 
 import com.werockstar.rxmultiplesource.MainApplication;
 import com.werockstar.rxmultiplesource.R;
+import com.werockstar.rxmultiplesource.adapter.RepoAdapter;
 import com.werockstar.rxmultiplesource.api.GithubApi;
 import com.werockstar.rxmultiplesource.model.RepoCollection;
 import com.werockstar.rxmultiplesource.presenter.MainPresenter;
@@ -28,12 +29,16 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     Button btnSearch;
     RecyclerView rvRepoList;
 
+    RepoAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ((MainApplication) getApplication()).getComponent().inject(this);
+        adapter = new RepoAdapter();
+
         presenter = new MainPresenter(api, this);
         edtUsername = (EditText) findViewById(R.id.edtUsername);
         btnSearch = (Button) findViewById(R.id.btnSearch);
@@ -49,10 +54,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     private void configurationRecyclerView() {
         rvRepoList.setHasFixedSize(true);
         rvRepoList.setLayoutManager(new LinearLayoutManager(this));
+        rvRepoList.setAdapter(adapter);
     }
 
     @Override
     public void onDisplayRepo(List<RepoCollection> repoList) {
-
+        adapter.setRepo(repoList);
+        adapter.notifyDataSetChanged();
     }
 }
