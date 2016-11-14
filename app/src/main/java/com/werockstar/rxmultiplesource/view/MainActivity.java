@@ -1,5 +1,6 @@
 package com.werockstar.rxmultiplesource.view;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     private RecyclerView rvRepoList;
 
     private RepoAdapter adapter;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         setContentView(R.layout.activity_main);
 
         ((MainApplication) getApplication()).getComponent().inject(this);
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading..");
+        dialog.setCancelable(false);
+        dialog.setIndeterminate(false);
+
         adapter = new RepoAdapter();
 
         presenter = new MainPresenter(api, this);
@@ -61,5 +68,15 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     public void onDisplayRepo(List<RepoCollection> repoList) {
         adapter.setRepo(repoList);
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void loading() {
+        dialog.show();
+    }
+
+    @Override
+    public void loadingComplete() {
+        dialog.cancel();
     }
 }

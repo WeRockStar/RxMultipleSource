@@ -25,13 +25,17 @@ public class MainPresenter {
 
     public interface View {
         void onDisplayRepo(List<RepoCollection> repoList);
+        void loading();
+        void loadingComplete();
     }
 
     public void getRepo(String user) {
+        view.loading();
         subscription.add(api.getUsers(user)
                 .onBackpressureBuffer()
                 .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
                 .subscribeOn(Schedulers.io())
+                .doOnTerminate(() -> view.loadingComplete())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(repo -> {
                     view.onDisplayRepo(repo);
