@@ -23,13 +23,13 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Inject
     GithubApi api;
 
-    MainPresenter presenter;
+    private MainPresenter presenter;
 
-    EditText edtUsername;
-    Button btnSearch;
-    RecyclerView rvRepoList;
+    private EditText edtUsername;
+    private Button btnSearch;
+    private RecyclerView rvRepoList;
 
-    RepoAdapter adapter;
+    private RepoAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
