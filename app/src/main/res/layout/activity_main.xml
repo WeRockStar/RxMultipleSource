@@ -23,6 +23,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/btnSearch" />
+        android:layout_below="@id/btnSearch"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/repo_item_row" />
 
 </RelativeLayout>
