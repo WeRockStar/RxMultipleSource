@@ -10,6 +10,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -37,14 +40,14 @@ public class MainPresenter {
         void loadingComplete();
     }
 
-    public void getRepo(String user) {
+    public void getUser() {
 
         view.loading();
-
-        disposable.add(api.getUsers(user)
+        String[] users = new String[]{"google", "facebook", "ReactiveX", "WeRockStar"};
+        disposable.add(Observable.fromArray(users)
+                .flatMap(u -> api.getUsers(u))
                 .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
                 .doOnTerminate(() -> view.loadingComplete())
-                .serialize()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(repo -> {

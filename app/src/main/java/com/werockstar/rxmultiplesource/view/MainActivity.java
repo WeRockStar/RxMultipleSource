@@ -27,8 +27,7 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Inject
     MainPresenter presenter;
 
-    private EditText edtUsername;
-    private Button btnSearch;
+    private Button btnGet;
     private RecyclerView rvRepoList;
 
     private RepoAdapter adapter;
@@ -48,12 +47,11 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     }
 
     private void initialView() {
-        edtUsername = (EditText) findViewById(R.id.edtUsername);
-        btnSearch = (Button) findViewById(R.id.btnSearch);
+        btnGet = (Button) findViewById(R.id.btnGet);
         rvRepoList = (RecyclerView) findViewById(R.id.recyclerView);
 
-        btnSearch.setOnClickListener(v -> {
-            presenter.getRepo(edtUsername.getText().toString());
+        btnGet.setOnClickListener(v -> {
+            presenter.getUser();
         });
     }
 
