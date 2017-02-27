@@ -43,8 +43,9 @@ public class MainPresenter {
 
         disposable.add(api.getUsers(user)
                 .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
-                .subscribeOn(Schedulers.io())
                 .doOnTerminate(() -> view.loadingComplete())
+                .serialize()
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(repo -> {
                     view.onDisplayRepo(repo);
