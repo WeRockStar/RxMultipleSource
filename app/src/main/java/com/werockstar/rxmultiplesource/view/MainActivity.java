@@ -24,7 +24,8 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Inject
     GithubApi api;
 
-    private MainPresenter presenter;
+    @Inject
+    MainPresenter presenter;
 
     private EditText edtUsername;
     private Button btnSearch;
@@ -39,14 +40,14 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         setContentView(R.layout.activity_main);
 
         ((MainApplication) getApplication()).getComponent().inject(this);
-        dialog = new ProgressDialog(this);
-        dialog.setMessage("Loading..");
-        dialog.setCancelable(false);
-        dialog.setIndeterminate(false);
+        presenter.attachView(this);
 
-        adapter = new RepoAdapter();
+        initialView();
+        configurationRecyclerView();
+        createProgressDialog();
+    }
 
-        presenter = new MainPresenter(api, this);
+    private void initialView() {
         edtUsername = (EditText) findViewById(R.id.edtUsername);
         btnSearch = (Button) findViewById(R.id.btnSearch);
         rvRepoList = (RecyclerView) findViewById(R.id.recyclerView);
@@ -54,11 +55,17 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
         btnSearch.setOnClickListener(v -> {
             presenter.getRepo(edtUsername.getText().toString());
         });
+    }
 
-        configurationRecyclerView();
+    private void createProgressDialog() {
+        dialog = new ProgressDialog(this);
+        dialog.setMessage("Loading..");
+        dialog.setCancelable(false);
+        dialog.setIndeterminate(false);
     }
 
     private void configurationRecyclerView() {
+        adapter = new RepoAdapter();
         rvRepoList.setHasFixedSize(true);
         rvRepoList.setLayoutManager(new LinearLayoutManager(this));
         rvRepoList.setAdapter(adapter);
@@ -78,5 +85,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     @Override
     public void loadingComplete() {
         dialog.cancel();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        presenter.onDestroy();
     }
 }

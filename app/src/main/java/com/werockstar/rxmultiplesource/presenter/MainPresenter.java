@@ -8,31 +8,40 @@ import com.werockstar.rxmultiplesource.model.RepoCollection;
 
 import java.util.List;
 
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
+import javax.inject.Inject;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainPresenter {
 
     private View view;
     private GithubApi api;
-    private CompositeSubscription subscription = new CompositeSubscription();
+    private CompositeDisposable disposable = new CompositeDisposable();
 
-    public MainPresenter(GithubApi api, View view) {
-        this.view = view;
+    @Inject
+    public MainPresenter(GithubApi api) {
         this.api = api;
+    }
+
+    public void attachView(View view) {
+        this.view = view;
     }
 
     public interface View {
         void onDisplayRepo(List<RepoCollection> repoList);
+
         void loading();
+
         void loadingComplete();
     }
 
     public void getRepo(String user) {
+
         view.loading();
-        subscription.add(api.getUsers(user)
-                .onBackpressureBuffer()
+
+        disposable.add(api.getUsers(user)
                 .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
                 .subscribeOn(Schedulers.io())
                 .doOnTerminate(() -> view.loadingComplete())
@@ -42,5 +51,9 @@ public class MainPresenter {
                 }, throwable -> {
                     Log.d("Error", throwable.getMessage());
                 }));
+    }
+
+    public void onDestroy() {
+        disposable.clear();
     }
 }
