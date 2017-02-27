@@ -45,7 +45,7 @@ public class MainPresenter {
         view.loading();
         String[] users = new String[]{"google", "facebook", "ReactiveX", "WeRockStar"};
         disposable.add(Observable.fromArray(users)
-                .flatMap(u -> api.getUsers(u))
+                .flatMap(u -> api.getUsers(u), 10)
                 .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
                 .doOnTerminate(() -> view.loadingComplete())
                 .subscribeOn(Schedulers.io())
