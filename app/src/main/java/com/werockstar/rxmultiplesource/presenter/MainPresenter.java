@@ -47,6 +47,7 @@ public class MainPresenter {
         disposable.add(Observable.fromArray(users)
                 .flatMap(u -> api.getUsers(u), 10)
                 .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
+                .doOnError(throwable -> Observable.empty())
                 .doOnTerminate(() -> view.loadingComplete())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
