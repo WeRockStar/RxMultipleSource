@@ -45,7 +45,7 @@ public class MainPresenter {
         view.loading();
         String[] users = new String[]{"google", "facebook", "ReactiveX", "WeRockStar"};
         disposable.add(Observable.fromArray(users)
-                .flatMap(u -> api.getUsers(u), 10)
+                .flatMap(u -> api.getUsers(u), 5)
                 .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
                 .doOnError(throwable -> Observable.empty())
                 .doOnTerminate(() -> view.loadingComplete())
