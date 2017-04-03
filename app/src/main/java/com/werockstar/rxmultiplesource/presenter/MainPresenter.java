@@ -45,18 +45,18 @@ public class MainPresenter {
         view.loading();
 
         Observable<List<RepoCollection>> googleRepo = api.getUsers("google")
-                .flatMap(u -> api.getRepo(u.getLogin()).subscribeOn(Schedulers.io()));
+                .flatMap(u -> api.getRepo(u.getLogin()));
 
         Observable<List<RepoCollection>> facebookRepo = api.getUsers("facebook")
-                .flatMap(u -> api.getRepo(u.getLogin()).subscribeOn(Schedulers.io()));
+                .flatMap(u -> api.getRepo(u.getLogin()));
 
         Observable<List<RepoCollection>> reactiveXRepo = api.getUsers("ReactiveX")
-                .flatMap(u -> api.getRepo(u.getLogin()).subscribeOn(Schedulers.io()));
+                .flatMap(u -> api.getRepo(u.getLogin()));
 
         Observable<List<RepoCollection>> werockstarRepo = api.getUsers("WeRockStar")
-                .flatMap(u -> api.getRepo(u.getLogin()).subscribeOn(Schedulers.io()));
+                .flatMap(u -> api.getRepo(u.getLogin()));
 
-        Observable<List<RepoCollection>> repoObs = Observable.combineLatest(googleRepo, facebookRepo, reactiveXRepo, werockstarRepo, (g, f, r, w) -> {
+        Observable<List<RepoCollection>> repoObs = Observable.zip(googleRepo, facebookRepo, reactiveXRepo, werockstarRepo, (g, f, r, w) -> {
             final List<RepoCollection> repoList = new ArrayList<>();
             repoList.addAll(g);
             repoList.addAll(f);
