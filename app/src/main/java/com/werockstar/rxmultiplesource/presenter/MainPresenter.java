@@ -6,6 +6,7 @@ import android.util.Log;
 import com.werockstar.rxmultiplesource.api.GithubApi;
 import com.werockstar.rxmultiplesource.model.RepoCollection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,6 +21,8 @@ public class MainPresenter {
     private View view;
     private GithubApi api;
     private CompositeDisposable disposable = new CompositeDisposable();
+
+    private static final String TAG = MainPresenter.class.getSimpleName();
 
     @Inject
     public MainPresenter(GithubApi api) {
@@ -39,21 +42,38 @@ public class MainPresenter {
     }
 
     public void getUser() {
-
         view.loading();
-        String[] users = new String[]{"google", "facebook", "ReactiveX", "WeRockStar"};
-        disposable.add(Observable.fromArray(users)
-                .subscribeOn(Schedulers.io())
-                .flatMap(u -> api.getUsers(u).subscribeOn(Schedulers.io()), 5)
-                .flatMap(userInfo -> api.getRepo(userInfo.getLogin()))
-                .doOnError(throwable -> Observable.empty())
-                .doOnTerminate(() -> view.loadingComplete())
+
+        Observable<List<RepoCollection>> googleRepo = api.getUsers("google")
+                .flatMap(u -> api.getRepo(u.getLogin()).subscribeOn(Schedulers.io()));
+
+        Observable<List<RepoCollection>> facebookRepo = api.getUsers("facebook")
+                .flatMap(u -> api.getRepo(u.getLogin()).subscribeOn(Schedulers.io()));
+
+        Observable<List<RepoCollection>> reactiveXRepo = api.getUsers("ReactiveX")
+                .flatMap(u -> api.getRepo(u.getLogin()).subscribeOn(Schedulers.io()));
+
+        Observable<List<RepoCollection>> werockstarRepo = api.getUsers("WeRockStar")
+                .flatMap(u -> api.getRepo(u.getLogin()).subscribeOn(Schedulers.io()));
+
+        Observable<List<RepoCollection>> repoObs = Observable.combineLatest(googleRepo, facebookRepo, reactiveXRepo, werockstarRepo, (g, f, r, w) -> {
+            final List<RepoCollection> repoList = new ArrayList<>();
+            repoList.addAll(g);
+            repoList.addAll(f);
+            repoList.addAll(r);
+            repoList.addAll(w);
+            return repoList;
+        }).subscribeOn(Schedulers.io());
+
+        disposable.add(repoObs
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnTerminate(() -> view.loadingComplete())
                 .subscribe(repo -> {
                     view.onDisplayRepo(repo);
                 }, throwable -> {
-                    Log.d("Error", throwable.getMessage());
-                }));
+                    Log.d(TAG, "getUser error: " + throwable.getMessage());
+                })
+        );
     }
 
     public void onDestroy() {
