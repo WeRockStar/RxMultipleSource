@@ -76,12 +76,12 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Vie
     }
 
     @Override
-    public void loading() {
+    public void showLoading() {
         dialog.show();
     }
 
     @Override
-    public void loadingComplete() {
+    public void dismissLoading() {
         dialog.cancel();
     }
 

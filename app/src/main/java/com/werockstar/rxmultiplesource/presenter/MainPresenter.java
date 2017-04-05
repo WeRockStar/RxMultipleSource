@@ -36,13 +36,13 @@ public class MainPresenter {
     public interface View {
         void onDisplayRepo(List<RepoCollection> repoList);
 
-        void loading();
+        void showLoading();
 
-        void loadingComplete();
+        void dismissLoading();
     }
 
     public void getUser() {
-        view.loading();
+        view.showLoading();
 
         Observable<List<RepoCollection>> googleRepo = api.getUsers("google")
                 .flatMap(u -> api.getRepo(u.getLogin()));
@@ -67,7 +67,7 @@ public class MainPresenter {
 
         disposable.add(repoObs
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnTerminate(() -> view.loadingComplete())
+                .doOnTerminate(() -> view.dismissLoading())
                 .subscribe(repo -> {
                     view.onDisplayRepo(repo);
                 }, throwable -> {
