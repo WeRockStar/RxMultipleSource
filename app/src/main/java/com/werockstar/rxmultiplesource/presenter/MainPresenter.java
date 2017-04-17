@@ -42,37 +42,46 @@ public class MainPresenter {
     }
 
     public void getUser() {
-        view.showLoading();
+        final String google = "google";
+        final String reactiveX = "ReactiveX";
+        final String facebook = "facebook";
+        final String weRockStar = "WeRockStar";
 
-        Observable<List<RepoCollection>> googleRepo = api.getUsers("google")
+        Observable<List<RepoCollection>> googleRepo = api.getUsers(google)
                 .flatMap(u -> api.getRepo(u.getLogin()));
 
-        Observable<List<RepoCollection>> facebookRepo = api.getUsers("facebook")
+        Observable<List<RepoCollection>> facebookRepo = api.getUsers(facebook)
                 .flatMap(u -> api.getRepo(u.getLogin()));
 
-        Observable<List<RepoCollection>> reactiveXRepo = api.getUsers("ReactiveX")
+        Observable<List<RepoCollection>> reactiveXRepo = api.getUsers(reactiveX)
                 .flatMap(u -> api.getRepo(u.getLogin()));
 
-        Observable<List<RepoCollection>> werockstarRepo = api.getUsers("WeRockStar")
+        Observable<List<RepoCollection>> werockstarRepo = api.getUsers(weRockStar)
                 .flatMap(u -> api.getRepo(u.getLogin()));
 
-        Observable<List<RepoCollection>> repoObs = Observable.zip(googleRepo, facebookRepo, reactiveXRepo, werockstarRepo, (g, f, r, w) -> {
-            final List<RepoCollection> repoList = new ArrayList<>();
-            repoList.addAll(g);
-            repoList.addAll(f);
-            repoList.addAll(r);
-            repoList.addAll(w);
-            return repoList;
-        }).subscribeOn(Schedulers.io());
+        Observable<List<RepoCollection>> repoObs =
+                Observable.zip(googleRepo, facebookRepo, reactiveXRepo, werockstarRepo, (g, f, r, w) -> {
+                    final List<RepoCollection> repoList = new ArrayList<>();
+                    repoList.addAll(g);
+                    repoList.addAll(f);
+                    repoList.addAll(r);
+                    repoList.addAll(w);
+                    return repoList;
+                }).subscribeOn(Schedulers.io());
 
         disposable.add(repoObs
+                .doOnSubscribe(__ -> {
+                    view.showLoading();
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnTerminate(() -> view.dismissLoading())
                 .subscribe(repo -> {
-                    view.onDisplayRepo(repo);
-                }, throwable -> {
-                    Log.d(TAG, "getUser error: " + throwable.getMessage());
-                })
+                            view.onDisplayRepo(repo);
+                        },
+                        throwable -> {
+                            Log.d(TAG, "getUser error: " + throwable.getMessage());
+                        }
+                )
         );
     }
 
